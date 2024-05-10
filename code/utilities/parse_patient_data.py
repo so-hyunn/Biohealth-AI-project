@@ -11,6 +11,9 @@ import scipy.stats as stat
 import numpy as np
 import time, os
 
+cancer_type = 'NSCLC' # ['NSCLC', 'Kidney', 'Bladder'] only meaningful for Prat cohort
+
+data_dir = f'../../data/ImmunoTherapy/{cancer_type}'
 
 
 ## pathway expression and immunotherapy response
@@ -59,15 +62,6 @@ def parse_reactomeExpression_and_immunotherapyResponse(dataset, method='ssgsea',
 					if drug_treatment == 'post':
 						if 'Pre' in str(pdf.loc[pdf['Patient']==sample,:]['drug_treatment_info'].tolist()[0]):
 							continue
-						
-				elif 'Prat' in dataset:
-					if not 'all' == Prat_cancer_type.lower():						
-						new_samples = pdf.loc[pdf['CANCER2']==Prat_cancer_type,:]['Patient'].tolist()
-						if (not e_sample in new_samples) or (not sample in new_samples):
-							continue
-					else:
-						if not sample == e_sample:
-							continue
 				else:
 					if not sample == e_sample:
 						continue
@@ -77,10 +71,17 @@ def parse_reactomeExpression_and_immunotherapyResponse(dataset, method='ssgsea',
 	epdf = pd.DataFrame(data=epdf, columns=np.append(['pathway'], e_samples))
 	responses = np.array(responses)
 	return e_samples, edf, epdf, responses
+'''
+				elif 'Prat' in dataset:
+					if not 'all' == Prat_cancer_type.lower():						
+						new_samples = pdf.loc[pdf['CANCER2']==Prat_cancer_type,:]['Patient'].tolist()
+						if (not e_sample in new_samples) or (not sample in new_samples):
+							continue
+					else:
+						if not sample == e_sample:
+							continue
 
-
-
-
+'''
 
 # pathway expression
 def parse_reactome_expression(dataset, method='ssgsea'):
@@ -91,7 +92,7 @@ def parse_reactome_expression(dataset, method='ssgsea'):
 	'''
 	epdf = pd.DataFrame()
 	# directory
-	data_dir = '../../data/ImmunoTherapy'
+	#data_dir = '../../data/ImmunoTherapy'
 	fldr = dataset
 	for tmp_fldr in os.listdir(data_dir):
 		if (dataset in tmp_fldr) and (not '.txt' in tmp_fldr) and (not '.R' in tmp_fldr):
@@ -101,21 +102,24 @@ def parse_reactome_expression(dataset, method='ssgsea'):
 	try:
 		epdf = pd.read_csv('%s/%s/pathway_expression_ssgsea.txt'%(data_dir, fldr), sep='\t')
 	except: 
-		if 'IMvigor210' in fldr:
-			epdf = pd.read_csv('%s/%s/REACTOME_ssgsea.txt'%(data_dir, fldr), sep='\t')
-			epdf = epdf.rename(columns={'testType':'pathway'})
-		elif ('Liu' in fldr) or ('Gide' in fldr):
+		try:
 			epdf = pd.read_csv('%s/%s/ssgsea.txt'%(data_dir, fldr), sep='\t')
-		elif len(epdf) == 0:
-			if dataset in os.listdir('%s/ssgsea'%data_dir):
-				tmp_dir = '%s/ssgsea/%s/msigdb_c2'%(data_dir, dataset)
-				if 'ssgsea.txt' in os.listdir(tmp_dir):
-					epdf = pd.read_csv('%s/ssgsea.txt'%tmp_dir, sep='\t')
+		except: 
+			try:
+				epdf = pd.read_csv('%s/%s/ssgsea_TMM.txt'%(data_dir, fldr), sep='\t')
+			except:
+				pass
+
 	# data cleanup
 	if len(epdf)>0:
-		epdf = epdf.rename(columns={'testType':'pathway'})
-		epdf = epdf.loc[epdf['pathway'].str.contains('REACTOME_'),:]
-		epdf = epdf.dropna()
+		if fldr == 'PratNSCLC':
+			epdf = epdf.reset_index().rename(columns={'index': 'pathway'})
+			epdf = epdf.loc[epdf['pathway'].str.contains('REACTOME_'),:]
+			epdf = epdf.dropna()
+		else:
+			epdf = epdf.rename(columns={'testType':'pathway'})
+			epdf = epdf.loc[epdf['pathway'].str.contains('REACTOME_'),:]
+			epdf = epdf.dropna()
 	return epdf
 
 
@@ -127,14 +131,20 @@ def parse_immunotherapy_response(dataset):
 	dataset : 'IMvigor210', 'Liu', 'Riaz', 'Gide', 'Prat', 'Kim', 'Auslander'
 	'''
 	# directory
-	data_dir = '../../data/ImmunoTherapy'
+	#data_dir = '../../data/ImmunoTherapy'
 	fldr = dataset
 	for tmp_fldr in os.listdir(data_dir):
 		if (dataset in tmp_fldr) and (not '.txt' in tmp_fldr) and (not '.R' in tmp_fldr):
 			fldr = tmp_fldr
 			break
 	# import data
+	print("data_dir: ", data_dir, "fldr: ", fldr)
+ 
 	pdf = pd.read_csv('%s/%s/patient_df.txt'%(data_dir, fldr), sep='\t')
+	# debugging 
+ 	
+  
+  
 	if ('Liu' in fldr) or ('Gide' in fldr):
 		pdf['Response'] = pdf['Response'].astype(str)
 		pdf = pdf.loc[pdf['Response'].isin(['PD', 'PR', 'CR', 'SD']),:]
@@ -155,7 +165,7 @@ def parse_gene_expression(dataset):
 	dataset : 'IMvigor210', 'Liu', 'Riaz', 'Gide', 'Prat', 'Kim', 'Auslander'
 	'''
 	# directory
-	data_dir = '../../data/ImmunoTherapy'
+	#data_dir = '../../data/ImmunoTherapy'
 	fldr = dataset
 	for tmp_fldr in os.listdir(data_dir):
 		if (dataset in tmp_fldr) and (not '.txt' in tmp_fldr) and (not '.R' in tmp_fldr):
@@ -169,12 +179,25 @@ def parse_gene_expression(dataset):
 	else:
 		try:
 			edf = pd.read_csv('%s/%s/TMM_rna_seq.txt'%(data_dir, fldr), sep='\t')
+			edf = edf.rename(columns={'gene_id':'genes'})
 
 		except: 
 			try:
 				edf = pd.read_csv('%s/%s/expression_mRNA.norm3.txt'%(data_dir, fldr), sep='\t')
 				edf = edf.rename(columns={'gene_id':'genes'})
-			except: pass
+			except: 
+				try:
+					edf = pd.read_csv('%s/%s/rna_expr_TPMlog2.txt'%(data_dir, fldr), sep='\t')
+					edf = edf.rename(columns={'gene_id':'genes'})
+				except:
+					try:
+						edf = pd.read_csv('%s/%s/rna_expr_TMM.txt'%(data_dir, fldr), sep='\t')
+						if fldr == 'PratNSCLC':
+							edf = edf.reset_index().rename(columns={'index': 'genes'})
+						else:
+							edf = edf.rename(columns={'gene_id':'genes'})
+					except:
+						pass
 	edf = edf.dropna()
 	return edf
 
@@ -188,7 +211,7 @@ def parse_immunotherapy_survival(dataset, survival_type = 'os'):
 	'''
 	output = defaultdict(list)
 	# directory
-	data_dir = '../../data/ImmunoTherapy'
+	#data_dir = '../../data/ImmunoTherapy'
 	fldr = dataset
 	for tmp_fldr in os.listdir(data_dir):
 		if (dataset in tmp_fldr) and (not '.txt' in tmp_fldr) and (not '.R' in tmp_fldr):
@@ -286,7 +309,7 @@ def parse_clinical_features(dataset, clinical_feature='TMB'):
 
 
 	# directory
-	data_dir = '../../data/ImmunoTherapy'
+	#data_dir = '../../data/ImmunoTherapy'
 	fldr = dataset
 	for tmp_fldr in os.listdir(data_dir):
 		if (dataset in tmp_fldr) and (not '.txt' in tmp_fldr) and (not '.R' in tmp_fldr):
