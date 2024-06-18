@@ -12,11 +12,11 @@ The goal is to analyze comparatively for biomarkers associated with cancer-speci
 Project Silde Link: [Slide](https://docs.google.com/presentation/d/1ytQNVHQPi-oq5dnYlmXozXr5shAuIJ8TXj7mwpdYy1U/edit?usp=sharing)  
 Final Report Link: [Report](https://drive.google.com/file/d/1hkF630qSOZRQJzC15KiCEGvkhQawDVUG/view?usp=sharing)
   
-
-
+  
+  
 ## NetBio
-Source codes for generating results of "Network-based machine learning approach to predict immunotherapy response in cancer patients". 
-We modified NetBio code to apply other cancer data types and get results, important pathways for other cancer types. 
+Source codes for generating results of "Network-based machine learning approach to predict immunotherapy response in cancer patients".   
+We modified NetBio code to apply other cancer data types and get results, important pathways for other cancer types.   
 NetBio Paper Link: [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9240063/)
 
 ### Requirements
