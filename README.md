@@ -2,11 +2,13 @@
 ## Project Description
 This is our research project for AI for Bio-Health course, Dept of Life Sciences, POSTECH (2024.03 ~ 2024. 05).
 The goal is to analyze comparatively for biomarkers associated with cancer-specific ICI responses with NetBio framework
-+ 1) Identify cancer-specific biomarker by using NetBio framework 
++ Identify cancer-specific biomarker by using NetBio framework 
   + NetBio code Implementation, modify for apply for other cancer types
-+ 2) Check and Compare biological functions of each cancer-specific pathways
++ Check and Compare biological functions of each cancer-specific pathways
   + Gene Ontology analysis 
   + Pathway Enrichment analysis
+Project Silde Link: [Slide][https://docs.google.com/presentation/d/1ytQNVHQPi-oq5dnYlmXozXr5shAuIJ8TXj7mwpdYy1U/edit?usp=sharing]
+Final Report Link: [Report] [https://drive.google.com/file/d/1hkF630qSOZRQJzC15KiCEGvkhQawDVUG/view?usp=sharing]
 
 
 # NetBio
