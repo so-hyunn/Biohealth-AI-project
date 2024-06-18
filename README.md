@@ -7,8 +7,9 @@ The goal is to analyze comparatively for biomarkers associated with cancer-speci
 + Check and Compare biological functions of each cancer-specific pathways
   + Gene Ontology analysis 
   + Pathway Enrichment analysis
-Project Silde Link: [Slide][https://docs.google.com/presentation/d/1ytQNVHQPi-oq5dnYlmXozXr5shAuIJ8TXj7mwpdYy1U/edit?usp=sharing]
-Final Report Link: [Report] [https://drive.google.com/file/d/1hkF630qSOZRQJzC15KiCEGvkhQawDVUG/view?usp=sharing]
+
+Project Silde Link: [Slide](https://docs.google.com/presentation/d/1ytQNVHQPi-oq5dnYlmXozXr5shAuIJ8TXj7mwpdYy1U/edit?usp=sharing)
+Final Report Link: [Report] (https://drive.google.com/file/d/1hkF630qSOZRQJzC15KiCEGvkhQawDVUG/view?usp=sharing)
 
 
 # NetBio
